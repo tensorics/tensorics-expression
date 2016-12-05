@@ -12,12 +12,12 @@ import org.tensorics.core.tree.domain.Expression;
 import org.tensorics.expression.resolvers.WindowedExpressionResolver;
 
 /**
- * {@link Expression} that represents a {@link AnalysisModule}. It contains all the conditions for the analysis as well
- * as the enabling expression. The analysis conditions are grouped in a {@link AssertionGroupExpression}. The enabling
- * condition is an {@link Expression} of {@link Boolean} that decides if the {@link AssertionGroupExpression} is
+ * Expression that evaluates the targetExpression given the result of the enabling expression. The enabling
+ * expression is an {@link Expression} of {@link Boolean} that decides if the targetExpression is
  * resolved or not. This expression resolves into an {@link EvaluationStatus}.
  * 
  * @see WindowedExpressionResolver
+ * @param T the type of the target expression
  * @author acalia, caguiler
  */
 public class WindowedExpression<T extends Expression<?>> extends AbstractDeferredExpression<EvaluationStatus> {
