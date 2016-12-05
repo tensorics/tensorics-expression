@@ -59,7 +59,7 @@ task configureSonatypeDeployment(type: DefaultTask) << {
                 pom.project {
                     name 'tensorics-expression'
                     packaging 'jar'
-                    description ''
+                    description 'Tensoric expression is able to solve an expression tree. Much like a tree coming from a traditional equation, where both operations and operands can be objects and can implement custom behavior'
                     url 'http://www.tensorics.org'
 
                     groupId 'org.tensorics'
