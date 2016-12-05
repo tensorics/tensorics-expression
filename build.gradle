@@ -17,6 +17,16 @@ buildscript {
     }
 }
 
+sourceSets {
+    main { java {  srcDir 'src/java'  } }
+    test {
+        java {
+            srcDir 'src/examples'
+            srcDir 'src/test'
+        }
+    }
+}
+
 if(System.getenv('TRAVIS')){
     apply plugin: 'io.codearte.nexus-staging'
     apply from: './scripts/deploy.gradle'
