@@ -3,7 +3,18 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 repositories {
+    mavenCentral()
     jcenter()
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
+    }
 }
 
 if(System.getenv('TRAVIS')){
