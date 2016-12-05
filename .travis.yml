@@ -1,6 +1,9 @@
 language: java
 jdk:
 - oraclejdk8
-before_install:
-- openssl aes-256-cbc -K $encrypted_330589789bd4_key -iv $encrypted_330589789bd4_iv
-  -in deployment.key.enc -out deployment.key -d
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: /bin/sh ./scripts/deploy-jars.sh
+  on:
+    tags: true

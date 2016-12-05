@@ -6,6 +6,11 @@ repositories {
     jcenter()
 }
 
+if(System.getenv('TRAVIS')){
+    apply plugin: 'io.codearte.nexus-staging'
+    apply from : './scripts/deploy.gradle'
+}
+
 dependencies {
     compile 'com.google.guava:guava:19.0'
     compile 'org.slf4j:slf4j-api:1.7.21'
