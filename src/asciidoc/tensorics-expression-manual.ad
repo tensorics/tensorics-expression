@@ -1,0 +1,12 @@
+---
+layout: default
+title: Tensorics Expression Manual
+permalink: /tensorics-expression/manual/
+project: "Tensorics expression"
+---
+:icons: font
+:sectanchors:
+:page-liquid:
+:source-highlighter: highlightjs
+
+= Tensorics Expression Manual

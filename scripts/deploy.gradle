@@ -80,12 +80,27 @@ task configureSonatypeDeployment(type: DefaultTask) << {
                     }
 
                     developers {
-                        developer {
-                            id 'andreacalia'
-                            name 'Andrea Calia'
-                            email 'andrea.calia.46@gmail.com'
-                        }
-                    }
+          						developer {
+          							id 'andreacalia'
+          							name 'Andrea Calia'
+          							email 'andrea.calia.46@gmail.com'
+          						}
+                      developer {
+                        id 'kaifox'
+                        name 'Kajetan Fuchsberger'
+                        email 'kajetan.fuchsberger@gmail.com'
+          						}
+                      developer {
+          							id 'agorzawski'
+          							name 'Arek Gorzawski'
+          							email 'agorzawski@gmail.com'
+          						}
+                      developer {
+          							id 'michi42'
+          							name 'Michi Hostettler'
+          							email 'michi.hostettler@cern.ch'
+          						}
+          					}
 
                 }
             }
