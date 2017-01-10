@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Tensorics Expression Manual
-permalink: /tensorics-expression/manual/
+permalink: /projects/tensorics-expression/manual/
 project: "Tensorics expression"
 ---
 :icons: font
@@ -10,3 +10,5 @@ project: "Tensorics expression"
 :source-highlighter: highlightjs
 
 = Tensorics Expression Manual
+
+Todo
