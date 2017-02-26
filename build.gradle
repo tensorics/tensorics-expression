@@ -26,7 +26,10 @@ buildscript {
             jcenter()
         }
     }
-    dependencies { classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3" }
+    dependencies { 
+        classpath 'net.saliman:gradle-cobertura-plugin:2.4.0'
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3" 
+        }
 }
 
 sourceSets {
@@ -41,6 +44,7 @@ sourceSets {
 }
 
 if(System.getenv('TRAVIS')){
+    apply plugin: 'cobertura'
     apply plugin: 'io.codearte.nexus-staging'
     apply from: './scripts/deploy.gradle'
 }
