@@ -3,22 +3,35 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 repositories {
-    mavenCentral()
-    jcenter()
+    if (System.getenv('BUILD_SERVER') || System.getProperty('CERN_TECHNET_VM')) {
+        maven {
+            url 'http://artifactory.cern.ch/repo'
+            url 'http://artifactory.cern.ch/jcenter'
+        }
+    } else {
+        mavenCentral()
+        jcenter()
+    }
 }
 
 buildscript {
     repositories {
-        mavenCentral()
-        jcenter()
+        if (System.getenv('BUILD_SERVER') || System.getProperty('CERN_TECHNET_VM')) {
+            maven {
+                url 'http://artifactory.cern.ch/repo'
+                url 'http://artifactory.cern.ch/jcenter'
+            }
+        } else {
+            mavenCentral()
+            jcenter()
+        }
     }
-    dependencies {
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
-    }
+    dependencies { classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3" }
 }
 
 sourceSets {
-    main { java {  srcDir 'src/java'  } }
+    main { java {  srcDir 'src/java'
+        } }
     test {
         java {
             srcDir 'src/examples'
