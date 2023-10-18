@@ -70,7 +70,10 @@ dependencies {
 
 javadoc {  options.encoding = "UTF-8" }
 
-task wrapper(type: Wrapper) { gradleVersion = '3.3' }
+wrapper {
+    gradleVersion = '5.4.1'
+    distributionType = Wrapper.DistributionType.ALL
+}
 
 if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
