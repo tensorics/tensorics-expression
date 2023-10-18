@@ -38,7 +38,7 @@ repositories {
 dependencies {
     compile 'com.google.guava:guava:30.1.1-jre'
     compile 'org.slf4j:slf4j-api:1.7.21'
-    compile 'org.tensorics:tensorics-core:0.0.28'
+    compile 'org.tensorics:tensorics-core:0.0.81'
 
     testCompile 'junit:junit:4.13.1'
     testCompile 'org.mockito:mockito-core:1.10.19'
