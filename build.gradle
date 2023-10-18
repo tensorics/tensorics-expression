@@ -1,45 +1,64 @@
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'signing'
+import org.gradle.api.tasks.bundling.Jar
+import org.gradle.api.tasks.wrapper.Wrapper
 
-repositories {
-    if (System.getenv('BUILD_SERVER') || System.getProperty('CERN_TECHNET_VM')) {
-        maven {
-            url 'http://artifactory.cern.ch/repo'
+buildscript {
+    project.ext['CERN_VM'] = System.getProperty('CERN_TECHNET_VM') ?: System.getenv('CERN_TECHNET_VM') ?: project.hasProperty('CERN_TECHNET_VM') ?: false
+    project.ext['DEPLOYMENT'] = System.getProperty('DEPLOYMENT') ?: false
+
+    repositories {
+        if (project['CERN_VM']) {
+            maven { url 'http://artifactory.cern.ch/ds-jcenter' }
+            maven { url 'http://artifactory.cern.ch/development' }
+            maven { url 'http://artifactory.cern.ch/gradle-plugins' }
+        } else {
+            gradlePluginPortal()
         }
-        maven {
-            url 'http://artifactory.cern.ch/jcenter'
-        }
-    } else {
-        mavenCentral()
-        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jk1:gradle-license-report:1.5'
+        classpath 'io.github.gradle-nexus:publish-plugin:1.0.0'
+        classpath 'org.ow2.asm:asm:5.0.3'
     }
 }
 
-buildscript {
-    repositories {
-        if (System.getenv('BUILD_SERVER') || System.getProperty('CERN_TECHNET_VM')) {
-            maven {
-                url 'http://artifactory.cern.ch/repo'
-            }
-            maven {
-                url 'http://artifactory.cern.ch/jcenter'
-            }
-        } else {
-            mavenCentral()
-            jcenter()
-        }
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+group = project['POM.groupId']
+
+repositories {
+    if (project['CERN_VM']) {
+        maven { url 'http://artifactory.cern.ch/ds-jcenter' }
+        maven { url 'http://artifactory.cern.ch/development' }
+    } else {
+        mavenCentral()
     }
-    dependencies { 
-        classpath 'net.saliman:gradle-cobertura-plugin:2.4.0'
-        classpath 'org.ow2.asm:asm:5.0.3'
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3" 
-        }
+}
+
+dependencies {
+    compile 'com.google.guava:guava:30.1.1-jre'
+    compile 'org.slf4j:slf4j-api:1.7.21'
+    compile 'org.tensorics:tensorics-core:0.0.28'
+
+    testCompile 'junit:junit:4.13.1'
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile 'org.assertj:assertj-core:3.6.1'
+}
+
+wrapper {
+    gradleVersion = '5.4.1'
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 sourceSets {
-    main { java {  srcDir 'src/java'
-        } }
+    main {
+        java {
+            srcDir 'src/java'
+        }
+    }
     test {
         java {
             srcDir 'src/examples'
@@ -48,49 +67,63 @@ sourceSets {
     }
 }
 
-if(System.getenv('TRAVIS')){
-    apply plugin: 'cobertura'
-    
-    apply plugin: 'io.codearte.nexus-staging'
-    apply from: './scripts/deploy.gradle'
-    
-    cobertura.coverageFormats = ['html', 'xml']
-    cobertura.coverageSourceDirs = sourceSets.main.java.srcDirs
-}
-
-dependencies {
-    compile 'com.google.guava:guava:19.0'
-    compile 'org.slf4j:slf4j-api:1.7.21'
-    compile 'org.tensorics:tensorics-core:0.0.28'
-
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.10.19'
-    testCompile 'org.assertj:assertj-core:3.6.1'
-}
-
-javadoc {  options.encoding = "UTF-8" }
-
-wrapper {
-    gradleVersion = '5.4.1'
-    distributionType = Wrapper.DistributionType.ALL
-}
-
-if (JavaVersion.current().isJava8Compatible()) {
-    allprojects {
-        tasks.withType(Javadoc) {
-            options.addStringOption('Xdoclint:none', '-quiet')
-        }
+test {
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
     }
 }
 
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        xml.destination file("$buildDir/reports/jacoco/report.xml")
+        html.enabled true
+        csv.enabled false
+    }
 }
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+javadoc { options.encoding = "UTF-8" }
+
+if(!project.tasks.findByName("javadocJar")) {
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
 }
 
-artifacts { archives javadocJar, sourcesJar }
+if(!project.tasks.findByName("sourcesJar")) {
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+}
+
+eclipse {
+    classpath {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+if (!project['CERN_VM']) {
+    println 'Applying licensing report'
+    apply plugin: 'com.github.jk1.dependency-license-report'
+
+    licenseReport {
+        renderers = [this.class.classLoader.loadClass('com.github.jk1.license.render.InventoryHtmlReportRenderer').newInstance()]
+        filters = [this.class.classLoader.loadClass('com.github.jk1.license.filter.LicenseBundleNormalizer').newInstance()]
+    }
+}
+
+if (project['DEPLOYMENT']) {
+    println 'Applying deployment scripts'
+    apply from: 'https://raw.githubusercontent.com/ossgang/gradle-scripts/master/deployment/deploy-to-maven-central.gradle'
+}
